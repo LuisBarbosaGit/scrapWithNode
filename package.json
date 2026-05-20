@@ -1,0 +1,34 @@
+{
+  "name": "crawlerdesafio",
+  "version": "1.0.0",
+  "description": "Web scraper para books.toscrape.com — desafio técnico",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/index.js",
+    "dev": "tsx src/index.ts",
+    "lint": "eslint src"
+  },
+  "keywords": [
+    "scraping",
+    "playwright",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "openai": "^6.8.1",
+    "playwright": "^1.60.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.1",
+    "eslint": "^10.4.0",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.4"
+  }
+}

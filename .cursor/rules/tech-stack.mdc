@@ -1,0 +1,34 @@
+---
+description: Stack, bibliotecas e convenções de código
+globs: "**/*.{ts,tsx,json}"
+alwaysApply: false
+---
+
+# Stack
+
+| Área | Escolha |
+|------|---------|
+| Runtime | Node.js + TypeScript (strict) |
+| Scraping | **Playwright** (estático + bônus páginas dinâmicas) |
+| IA (bônus) | OpenAI **ou** Gemini — extrair campos da descrição (gênero, sentimento, etc.) |
+| Testes / lint | **Jest** + **ESLint** |
+| Persistência | JSON + CSV; **PostgreSQL** via `docker-compose` (fase 6) |
+
+## Estrutura sugerida
+
+```
+src/
+  scraper/       # Playwright, navegação
+  parser/        # extração DOM → DTO
+  services/      # orquestração, IA
+  persistence/   # JSON, CSV, DB
+  types/         # interfaces Book, etc.
+tests/           # espelha src/
+```
+
+## Convenções
+
+- Playwright: `headless` configurável; fechar browser/context no `finally`
+- IA: prompt enxuto + schema JSON de saída; falha de API não derruba scrape inteiro (degradar graciosamente)
+- Testes: Jest com `ts-jest` ou equivalente; fixtures HTML quando possível
+- Não adicionar dependências fora da fase atual sem necessidade

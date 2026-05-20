@@ -1,0 +1,26 @@
+---
+description: Missão e escopo do desafio de web scraping (books.toscrape.com)
+alwaysApply: true
+---
+
+# CrawlerDesafio — Missão
+
+Projeto de **web scraping** em **Node.js + TypeScript** para desafio técnico.
+
+## Objetivo
+
+Extrair dados de **https://books.toscrape.com/** com código **limpo**, **modular**, **testável** e alinhado a boas práticas.
+
+## Princípios
+
+- Separação clara: fetch/navegação → parsing → domínio → persistência
+- Tipos explícitos; evitar `any` sem justificativa
+- Erros tratados com contexto (URL, página, seletor)
+- Configuração via variáveis de ambiente (`.env.example`, nunca commitar segredos)
+- Respostas e commits em **português** quando o usuário interagir em PT
+
+## Site-alvo
+
+- Listagem paginada de livros
+- Página de detalhe: título, preço, disponibilidade, descrição, categorias, etc.
+- Respeitar rate limiting e timeouts razoáveis
