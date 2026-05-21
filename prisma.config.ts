@@ -3,9 +3,9 @@ import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({
-  schema: "prisma/schema.prisma",
+  schema: "src/infra/db/prisma/schema.prisma",
   migrations: {
-    path: "prisma/migrations",
+    path: "src/infra/db/prisma/migrations",
   },
   datasource: {
     // URL usada pelo CLI (migrate). Fallback para `prisma generate` sem .env.
