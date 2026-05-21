@@ -1,7 +1,7 @@
 import OpenAI from "openai";
-import { Book } from "../../types/book";
-import { extractBookMetadata } from "./utils/extractMetadata";
-import { env } from "../../config/env";
+import { Book } from "../../types/book.js";
+import { extractBookMetadata } from "./utils/extractMetadata.js";
+import { env } from "../../config/env.js";
 
 const MAX_BOOKS = 2;
 

@@ -1,11 +1,11 @@
 import { chromium, type Browser, type Page } from "playwright";
 
-import { scraperConfig } from "./config";
-import { parseListingItem, type RawListingItem } from "./utils/listingParser";
-import type { Book } from "../../types/book";
-import { delay } from "./utils/delay";
-import { getNextPageUrl } from "./utils/getNextPageUrl";
-import { getBookDescription } from "./utils/getBookDescription";
+import { scraperConfig } from "./config.js";
+import { parseListingItem, type RawListingItem } from "./utils/listingParser.js";
+import type { Book } from "../../types/book.js";
+import { delay } from "./utils/delay.js";
+import { getNextPageUrl } from "./utils/getNextPageUrl.js";
+import { getBookDescription } from "./utils/getBookDescription.js";
 
 export class BookScraper {
   private browser: Browser | null = null;

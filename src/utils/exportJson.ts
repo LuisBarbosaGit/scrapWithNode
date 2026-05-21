@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { Book } from "../types/book";
+import type { Book } from "../types/book.js";
 
 export async function exportToJson(
   books: Book[],

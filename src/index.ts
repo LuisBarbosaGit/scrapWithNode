@@ -1,11 +1,15 @@
-import { env } from "./config/env";
+import { env } from "./config/env.js";
 
-import { BookScraper } from "./modules/scraper/bookScraper";
-import { AgentProcessor } from "./modules/agentProcessor/agentProcessor";
-import { getOpenAiClient } from "./infra/agent/client";
-import { exportToJson } from "./utils/exportJson";
+import { BookScraper } from "./modules/scraper/bookScraper.js";
+import { AgentProcessor } from "./modules/agentProcessor/agentProcessor.js";
+import { getOpenAiClient } from "./infra/agent/client.js";
+import { startHealthServer } from "./infra/http/healthServer.js";
+import { disconnectPrisma } from "./infra/db/client.js";
+import { persistBooks } from "./modules/scraper/repository/bookRepository.js";
+import { exportToJson } from "./utils/exportJson.js";
 
 async function start(): Promise<void> {
+  const healthServer = startHealthServer(env.PORT);
   const scraper = new BookScraper();
   const agentClient = getOpenAiClient();
   const agentProcessor = new AgentProcessor(agentClient);
@@ -16,14 +20,18 @@ async function start(): Promise<void> {
 
     await agentProcessor.execute(books);
 
-    const jsonPath = await exportToJson(books, env.OUTPUT_DIR);
+    if (env.DATABASE_URL) {
+      const saved = await persistBooks(books);
+      console.log(`\nPostgreSQL: ${saved} livro(s) persistido(s).`);
+    }
 
-    console.log(`\nJSON: ${jsonPath}`);
-    console.log("\nAmostra:");
-    console.log(JSON.stringify(books.slice(0, 2), null, 2));
+    await exportToJson(books, env.OUTPUT_DIR);
   } catch (error) {
     console.error("Erro durante o scraping:", error);
     process.exitCode = 1;
+  } finally {
+    await disconnectPrisma();
+    healthServer.close();
   }
 }
 

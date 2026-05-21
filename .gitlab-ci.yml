@@ -1,0 +1,111 @@
+# Pipeline CI/CD — CrawlerDesafio
+# Documentação: https://docs.gitlab.com/ee/ci/yaml/
+
+stages:
+  - lint
+  - test
+  - build
+  - deploy
+
+variables:
+  NODE_VERSION: "22"
+  # Imagem no GitLab Container Registry (ex.: registry.gitlab.com/grupo/crawlerdesafio)
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+
+# ---------------------------------------------------------------------------
+# Template compartilhado: Node + cache de node_modules
+# ---------------------------------------------------------------------------
+.node_job:
+  image: node:${NODE_VERSION}-bookworm-slim
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+    policy: pull-push
+  before_script:
+    - npm ci
+
+# ---------------------------------------------------------------------------
+# lint — ESLint (falha se houver erros)
+# ---------------------------------------------------------------------------
+lint:
+  extends: .node_job
+  stage: lint
+  script:
+    - npm run lint
+
+# ---------------------------------------------------------------------------
+# test — Jest (falha se houver erros)
+# ---------------------------------------------------------------------------
+test:
+  extends: .node_job
+  stage: test
+  variables:
+    # Prisma generate / migrate CLI (não conecta ao banco neste job)
+    DATABASE_URL: postgresql://crawler:crawler@localhost:5432/crawlerdb?schema=public
+  script:
+    - npm run db:generate
+    - npm run test
+
+# ---------------------------------------------------------------------------
+# build — Docker image + push para GitLab Container Registry
+# Variáveis nativas: CI_REGISTRY, CI_REGISTRY_USER, CI_REGISTRY_PASSWORD,
+# CI_REGISTRY_IMAGE, CI_COMMIT_SHORT_SHA
+# ---------------------------------------------------------------------------
+build:
+  stage: build
+  image: docker:27-cli
+  services:
+    - name: docker:27-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker build -t "$IMAGE_TAG" .
+    - docker push "$IMAGE_TAG"
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "main" ]; then
+        docker tag "$IMAGE_TAG" "$CI_REGISTRY_IMAGE:latest"
+        docker push "$CI_REGISTRY_IMAGE:latest"
+      fi
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "main"
+
+# ---------------------------------------------------------------------------
+# deploy — simulação de deploy (somente branch main)
+# ---------------------------------------------------------------------------
+deploy:
+  stage: deploy
+  image: alpine:3.21
+  needs:
+    - build
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  script:
+    - echo "=== Deploy simulado (AWS ECS) ==="
+    - echo "Cluster   crawler-prod"
+    - echo "Service   crawler-scraper"
+    - echo "Imagem    $IMAGE_TAG"
+    - echo ""
+    - echo "Comandos que seriam executados:"
+    - echo "  aws ecs update-service \\"
+    - echo "    --cluster crawler-prod \\"
+    - echo "    --service crawler-scraper \\"
+    - echo "    --force-new-deployment"
+    - echo ""
+    - echo "  aws ecs wait services-stable \\"
+    - echo "    --cluster crawler-prod \\"
+    - echo "    --services crawler-scraper"
+    - echo ""
+    - echo "Task definition image:"
+    - echo "  $IMAGE_TAG"
+    - echo "=== Fim da simulação ==="

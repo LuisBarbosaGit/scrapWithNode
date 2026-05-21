@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-import { env } from "../../config/env";
+import { env } from "../../config/env.js";
 
 let client: OpenAI | null = null;
 

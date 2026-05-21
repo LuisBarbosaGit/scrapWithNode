@@ -8,6 +8,8 @@ const envSchema = z
     OPENAI_MODEL: z.string().default("gpt-4o-mini"),
     OPENAI_MAX_TOKENS: z.coerce.number().int().positive().default(120),
     OUTPUT_DIR: z.string().default("output"),
+    DATABASE_URL: z.string().min(1).optional(),
+    PORT: z.coerce.number().int().positive().default(3000),
     SKIP_LLM: z
       .enum(["true", "false", "1", "0"])
       .optional()

@@ -1,1 +1,1 @@
-export type { BookMetadataAgentResult as BookMetadataResult } from "../../schemas/bookMetadataSchema";
+export type { BookMetadataAgentResult as BookMetadataResult } from "../../schemas/bookMetadataSchema.js";

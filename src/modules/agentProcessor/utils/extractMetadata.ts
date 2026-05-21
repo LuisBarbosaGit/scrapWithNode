@@ -1,9 +1,9 @@
 import { zodTextFormat } from "openai/helpers/zod";
 
-import { env } from "../../../config/env";
-import { BookMetadataAgentSchema } from "../../../schemas/bookMetadataSchema";
-import { truncateForLlm } from "./truncate";
-import type { BookMetadataResult } from "../types";
+import { env } from "../../../config/env.js";
+import { BookMetadataAgentSchema } from "../../../schemas/bookMetadataSchema.js";
+import { normalizeText } from "./truncate.js";
+import type { BookMetadataResult } from "../types.js";
 import OpenAI from "openai";
 
 const SCHEMA_NAME = "book_metadata";
@@ -14,7 +14,7 @@ const SYSTEM_PROMPT =
 const USER_PROMPT_PREFIX = "Book description:\n\n";
 
 function mockMetadata(description: string): BookMetadataResult {
-  const snippet = truncateForLlm(description, 200);
+  const snippet = normalizeText(description, 200);
   return {
     categories: ["General Fiction"],
     description: snippet || "No description available.",
@@ -28,7 +28,7 @@ export async function extractBookMetadata(
   if (env.SKIP_LLM) {
     return mockMetadata(description);
   }
-  const input = truncateForLlm(description);
+  const input = normalizeText(description);
 
   const response = await agent.responses.parse({
     model: env.OPENAI_MODEL,

@@ -1,0 +1,12 @@
+node_modules
+dist
+output
+.env
+.git
+.gitignore
+coverage
+*.log
+playwright-report
+test-results
+.cursor
+.agents

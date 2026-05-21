@@ -1,5 +1,5 @@
-import { parseStarRating } from "./starRating";
-import type { Book, BookAiMetadata } from "../../../types/book";
+import { parseStarRating } from "./starRating.js";
+import type { Book, BookAiMetadata } from "../../../types/book.js";
 
 export interface RawListingItem {
   title: string;

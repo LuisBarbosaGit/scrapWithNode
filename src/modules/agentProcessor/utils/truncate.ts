@@ -1,6 +1,6 @@
 const DEFAULT_MAX_CHARS = 900;
 
-export function truncateForLlm(
+export function normalizeText(
   text: string,
   maxChars = DEFAULT_MAX_CHARS,
 ): string {
