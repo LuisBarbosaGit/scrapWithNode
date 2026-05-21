@@ -1,5 +1,4 @@
 import { env } from "./config/env.js";
-
 import { BookScraper } from "./modules/scraper/bookScraper.js";
 import { AgentProcessor } from "./modules/agentProcessor/agentProcessor.js";
 import { getOpenAiClient } from "./infra/agent/client.js";
