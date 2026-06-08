@@ -19,7 +19,7 @@ async function start(): Promise<void> {
 
     await agentProcessor.execute(books);
 
-    if (env.DATABASE_URL) {
+    if (env.DATABASE_URL && !env.SKIP_LLM) {
       const saved = await persistBooks(books);
       console.log(`\nPostgreSQL: ${saved} livro(s) persistido(s).`);
     }
