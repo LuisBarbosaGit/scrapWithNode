@@ -11,13 +11,11 @@ const envSchema = z
     DATABASE_URL: z.string().min(1).optional(),
     PORT: z.coerce.number().int().positive().default(3000),
     SKIP_LLM: z
-      .enum(["true", "false", "1", "0"])
-      .optional()
-      .transform((v) => v === "true" || v === "1"),
-  })
-  .refine((data) => data.SKIP_LLM === true || !!data.OPENAI_API_KEY, {
-    message: "OPENAI_API_KEY é obrigatória quando SKIP_LLM não está ativo",
-    path: ["OPENAI_API_KEY"],
+      .enum(["true", "false"])
+      .optional(),
+    SAVE_DATA: z
+    .enum(["true", "false"])
+    .optional()
   });
 
 export const env = envSchema.parse(process.env);
